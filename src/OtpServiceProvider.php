@@ -14,5 +14,9 @@ class OtpServiceProvider extends ServiceProvider
 
     public function boot()
     {
+        //Publish migrations
+        $this->publishes([
+            __DIR__.'/../database/migrations/' => database_path('migrations')
+        ], 'migrations');
     }
 }
