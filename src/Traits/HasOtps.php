@@ -2,6 +2,7 @@
 
 namespace Murkrow\Otp\Traits;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Support\Facades\DB;
 use Murkrow\Otp\Models\Otp;
 
 /**
@@ -23,13 +24,18 @@ trait HasOtps
      */
     public function generateOtp(int $minExp = 30, int $codeLength = 6, bool $alphaNumeric=false): Otp
     {
+        DB::beginTransaction();
+
         //Check how many otps user has
         $otpCount = $this->otps()->count();
 
         //If user has more than n otps, delete the oldest one
-        if($otpCount > config('otp.max_otps_per_user')){
-            $killedOtp = $this->otps()->orderBy('valid_until', 'asc')->first();
-            Otp::where('user_id',$this->id)->where('otp', $killedOtp->otp)->delete();
+        if($otpCount >= config('otp.max_otps_per_user')){
+            // Remove all otps for user which are out of the limit
+            $this->otps()
+                ->orderBy('created_at', 'asc')
+                ->limit($otpCount - config('otp.max_otps_per_user') + 1)
+                ->delete();
         }
 
         //Create new otp
@@ -38,6 +44,9 @@ trait HasOtps
         $otp->otp = $this->generateSafeRandomCode($codeLength, $alphaNumeric);
         $otp->valid_until = now()->addMinutes($minExp);
         $otp->save();
+
+        DB::commit();
+
         return $otp;
     }
 
@@ -50,7 +59,11 @@ trait HasOtps
      */
     public function validateOtp(string $otp): bool
     {
-        return $this->otps()->where('otp',$otp)->exists();
+        return $this
+            ->otps()
+            ->where('otp',$otp)
+            ->where('valid_until','>',now())
+            ->exists();
     }
 
     /**
