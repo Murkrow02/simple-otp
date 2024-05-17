@@ -9,6 +9,18 @@ To install the Simple OTP package, run the following command:
 ```bash
 composer require murkrow/simple-otp
 ```
+### Running migrations
+Remember to run the migrations to create the `otps` table.
+
+```bash
+php artisan migrate
+```
+
+### (Optional) Publishing vendor files
+You can publish the config file and the migration using
+```bash
+php artisan vendor:publish 
+```
 
 ## Usage
 
@@ -28,13 +40,6 @@ class User extends Authenticatable
 
     // Your user model code here
 }
-```
-
-### Running migrations
-Remember to run the migrations to create the `otps` table.
-
-```bash
-php artisan migrate
 ```
 
 ### Generating an OTP
@@ -80,9 +85,6 @@ max_otps_per_user' => 5,
 
 ## License
 
-This package is open-sourced software licensed under the [MIT license](LICENSE).
-
-For more information and detailed documentation, please refer to the official documentation.
-
+This package is open-sourced software licensed under the [GNU General Public License v3.0](LICENSE).
 
 
