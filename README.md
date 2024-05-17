@@ -30,6 +30,13 @@ class User extends Authenticatable
 }
 ```
 
+### Running migrations
+Remember to run the migrations to create the `otps` table.
+
+```bash
+php artisan migrate
+```
+
 ### Generating an OTP
 
 To generate a new OTP for a user, use the `generateOtp` method. This method accepts the following optional parameters:
@@ -63,10 +70,12 @@ $isValid = $user->validateAndRemoveOtp('123456');
 
 #### Maximum Number of OTPs Per User
 
-By default, a user can have up to 5 OTPs at a time. If a user exceeds this limit, the oldest OTP will be deleted. You can change this limit using the `setMaxOtpsPerUser` method.
+By default, a user can have up to 5 OTPs at a time. If a user exceeds this limit, the oldest OTP will be deleted. 
+You can change this behavior by setting the `max_otps_per_user` configuration value in the `otp` configuration file.
 
 ```php
-User::setMaxOtpsPerUser(10);
+// config/otp.php
+max_otps_per_user' => 5,
 ```
 
 ## License

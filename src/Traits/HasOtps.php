@@ -9,9 +9,6 @@ use Murkrow\Otp\Models\Otp;
  */
 trait HasOtps
 {
-    //Maximum number of otps a user can have
-    static int $maxOtpsPerUser = 5;
-
     public function otps(): HasMany
     {
         return $this->hasMany(Otp::class);
@@ -30,7 +27,7 @@ trait HasOtps
         $otpCount = $this->otps()->count();
 
         //If user has more than n otps, delete the oldest one
-        if($otpCount > self::$maxOtpsPerUser){
+        if($otpCount > config('otp.max_otps_per_user')){
             $killedOtp = $this->otps()->orderBy('valid_until', 'asc')->first();
             Otp::where('user_id',$this->id)->where('otp', $killedOtp->otp)->delete();
         }
@@ -74,11 +71,6 @@ trait HasOtps
         return $valid;
     }
 
-
-    public static function setMaxOtpsPerUser(int $maxOtpsPerUser): void
-    {
-        self::$maxOtpsPerUser = $maxOtpsPerUser;
-    }
 
     /**
      * @param int $length
