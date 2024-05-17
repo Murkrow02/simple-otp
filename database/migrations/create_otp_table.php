@@ -11,6 +11,9 @@ return new class extends Migration
      */
     public function up(): void
     {
+        if(Schema::hasTable('user_otps'))
+            return;
+        
         Schema::create('user_otps', function (Blueprint $table) {
             $table->foreignId('user_id')->constrained('users')->cascadeOnDelete()->cascadeOnUpdate();
             $table->string('otp')->index();
