@@ -30,7 +30,7 @@ trait HasOtps
         $otpCount = $this->otps()->count();
 
         //If user has more than n otps, delete the oldest one
-        if($otpCount > 5){
+        if($otpCount > self::$maxOtpsPerUser){
             $killedOtp = $this->otps()->orderBy('valid_until', 'asc')->first();
             Otp::where('user_id',$this->id)->where('otp', $killedOtp->otp)->delete();
         }
@@ -72,6 +72,12 @@ trait HasOtps
             $this->otps()->where('otp', strtoupper($otp))->delete();
 
         return $valid;
+    }
+
+
+    public static function setMaxOtpsPerUser(int $maxOtpsPerUser): void
+    {
+        self::$maxOtpsPerUser = $maxOtpsPerUser;
     }
 
     /**
