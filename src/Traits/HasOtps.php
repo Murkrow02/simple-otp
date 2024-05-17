@@ -35,7 +35,7 @@ trait HasOtps
         //Create new otp
         $otp = new Otp();
         $otp->user_id = $this->id;
-        $otp->otp = $this->generateSafeRandomCode($codeLength, !$alphaNumeric);
+        $otp->otp = $this->generateSafeRandomCode($codeLength, $alphaNumeric);
         $otp->valid_until = now()->addMinutes($minExp);
         $otp->save();
         return $otp;
