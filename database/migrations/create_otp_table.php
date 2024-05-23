@@ -16,11 +16,11 @@ return new class extends Migration
         
         Schema::create('user_otps', function (Blueprint $table) {
             $table->foreignId('user_id')->constrained('users')->cascadeOnDelete()->cascadeOnUpdate();
-            $table->string('otp')->index();
-            //$table->string('type')->default('');
+            $table->string('code')->index();
+            $table->string('tag')->default('')->index();
             $table->dateTime('valid_until');
             $table->timestamps();
-            $table->primary(['user_id', 'otp']);
+            $table->primary(['user_id', 'code']);
         });
     }
 

@@ -1,6 +1,6 @@
 {
     "name": "murkrow/simple-otp",
-    "version": "1.0.6",
+    "version": "1.0.7",
     "autoload": {
         "psr-4": {
             "Murkrow\\Otp\\": "src/"

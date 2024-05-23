@@ -42,34 +42,92 @@ class User extends Authenticatable
 }
 ```
 
+
 ### Generating an OTP
 
-To generate a new OTP for a user, use the `generateOtp` method. This method accepts the following optional parameters:
-
-- `$minExp` (int): The OTP expiration time in minutes (default: 30 minutes).
-- `$codeLength` (int): The length of the OTP code (default: 6 characters).
-- `$alphaNumeric` (bool): Whether to generate an alphanumeric OTP (default: false, numeric only).
+To generate an OTP, use the `OtpBuilder` class. You can customize the OTP length, whether it is alphanumeric, its expiration time, and associate it with a user.
 
 ```php
-$user = User::find(1);
-$otp = $user->generateOtp(30, 6, true);
+use Murkrow\Otp\Builders\OtpBuilder;
+
+$otp = (new OtpBuilder())
+    ->forUser($user) // User object
+    ->length(6) // Length of the OTP
+    ->alphaNumeric(true) // Alphanumeric or numeric
+    ->tag('login') // Optional tag
+    ->expiresInMinutes(30) // Expiration time in minutes
+    ->create();
 ```
 
 ### Validating an OTP
 
-To validate an OTP without removing it, use the `validateOtp` method. This method returns `true` if the OTP is valid and `false` otherwise.
+To validate an OTP, use the `validateOtp` method provided by the `HasOtps` trait:
 
 ```php
-$isValid = $user->validateOtp('123456');
+$user = User::find(1); // User object
+
+$isValid = $user->validateOtp($otp, 'login'); // OTP and optional tag
+
+if ($isValid) {
+    // OTP is valid
+} else {
+    // OTP is invalid
+}
 ```
 
 ### Validating and Removing an OTP
 
-To validate an OTP and remove it from the valid OTPs, use the `validateAndRemoveOtp` method. This method returns `true` if the OTP is valid and `false` otherwise.
+To validate and remove an OTP after successful validation, use the `validateAndRemoveOtp` method:
 
 ```php
-$isValid = $user->validateAndRemoveOtp('123456');
+$isValid = $user->validateAndRemoveOtp($otp, 'login'); // OTP and optional tag
+
+if ($isValid) {
+    // OTP is valid and removed
+} else {
+    // OTP is invalid
+}
 ```
+
+## Example
+
+Here is an example of how to generate an OTP for a user, validate it, and then remove it after successful validation:
+
+```php
+use App\Models\User;
+use Murkrow\Otp\Builders\OtpBuilder;
+
+// Assume $user is an instance of the User model
+$user = User::find(1);
+
+// Generate an OTP
+$otpBuilder = new OtpBuilder();
+$otp = $otpBuilder
+    ->forUser($user)
+    ->length(6)
+    ->alphaNumeric(true)
+    ->expiresInMinutes(30)
+    ->create();
+
+// Validate the OTP
+$isValid = $user->validateOtp($otp->code, 'login');
+
+if ($isValid) {
+    echo "OTP is valid!";
+} else {
+    echo "Invalid OTP!";
+}
+
+// Validate and remove the OTP
+$isValidAndRemoved = $user->validateAndRemoveOtp($otp->code, 'login');
+
+if ($isValidAndRemoved) {
+    echo "OTP is valid and has been removed!";
+} else {
+    echo "Invalid OTP!";
+}
+```
+
 
 ### Configuration
 
@@ -86,5 +144,3 @@ max_otps_per_user' => 5,
 ## License
 
 This package is open-sourced software licensed under the [GNU General Public License v3.0](LICENSE).
-
-
