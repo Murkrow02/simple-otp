@@ -1,6 +1,6 @@
 {
     "name": "murkrow/simple-otp",
-    "version": "1.0.5",
+    "version": "1.0.6",
     "autoload": {
         "psr-4": {
             "Murkrow\\Otp\\": "src/"
@@ -14,7 +14,7 @@
     "minimum-stability": "stable",
     "prefer-stable": true,
     "require": {
-        "laravel/framework": "^10.17"
+        "laravel/framework": "*"
     },
     "extra": {
         "laravel": {
