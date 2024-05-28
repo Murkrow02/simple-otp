@@ -16,7 +16,7 @@ return new class extends Migration
         
         Schema::create('user_otps', function (Blueprint $table) {
             $table->foreignId('user_id')->constrained('users')->cascadeOnDelete()->cascadeOnUpdate();
-            $table->string('code')->index();
+            $table->string('code')->index()->unique();
             $table->string('tag')->default('')->index();
             $table->dateTime('valid_until');
             $table->timestamps();

@@ -21,4 +21,10 @@ class Otp extends Model
     protected $casts = [
         'valid_until' => 'datetime',
     ];
+
+
+    public function user(): BelongsTo
+    {
+        return $this->belongsTo("App\Models\User");
+    }
 }

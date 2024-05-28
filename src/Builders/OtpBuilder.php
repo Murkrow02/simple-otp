@@ -76,13 +76,34 @@ class OtpBuilder
         }
 
         // Generate a random code
-        $this->otp->code = $this->generateSafeRandomCode($this->length, $this->alphaNumeric);
+        $this->otp->code = $this->generateSafeUniqueRandomCode($this->length, $this->alphaNumeric);
 
         $this->otp->save();
 
         DB::commit();
 
         return $this->otp;
+    }
+
+    private function generateSafeUniqueRandomCode(int $length = 6, bool $alphaNumeric = true): string
+    {
+        $code = $this->generateSafeRandomCode($length, $alphaNumeric);
+
+        // Check if the code is unique
+        while($otp = Otp::where('code', $code)->exists()){
+
+            // Check if code is still valid
+            if($otp->valid_until < now()){
+                // Code is not valid anymore, delete it and return the code
+                $code = $otp->code;
+                $otp->delete();
+                break;
+            }
+            else
+                $code = $this->generateSafeRandomCode($length, $alphaNumeric);
+        }
+
+        return $code;
     }
 
     /**
